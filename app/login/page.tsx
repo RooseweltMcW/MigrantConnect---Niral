@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Users, Building2 } from "lucide-react"
+import axios from 'axios';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -52,14 +53,27 @@ export default function LoginPage() {
     }
   }
 
-  const handleLogin = (type: string) => {
-    // In a real app, you would validate and authenticate here
-    if (type === "worker") {
-      router.push("/dashboard")
-    } else {
-      router.push("/employer/dashboard")
+  const handleLogin = async (type: string, aadhaar_number: string, password: string) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        aadhaar_number,
+        otp
+      });
+      
+      // Optional: Save token
+      localStorage.setItem('token', response.data.token);
+  
+      // Redirect based on user type
+      if (type === 'worker') {
+        router.push('/dashboard');
+      } else {
+        router.push('/employer/dashboard');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Invalid Aadhaar or password');
     }
-  }
+  };
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
