@@ -53,7 +53,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleLogin = async (type: string, aadhaar_number: string, password: string) => {
+  const handleLogin = async (type: string, aadhaar_number: string, otp: string) => {
     try {
       const response = await axios.post("http://localhost:5000/api/auth/login", {
         aadhaar_number,

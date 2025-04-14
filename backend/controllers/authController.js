@@ -1,64 +1,63 @@
 const User = require('../models/User');
+const Worker = require('../models/Worker'); // Make sure you have this model
+const Employer = require('../models/Employer'); // Make sure you have this model
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// REGISTER with OTP (hashed)
-exports.register = async (req, res) => {
+exports.registerWorker = async (req , res) => {
   try {
-    const {
-      aadhaar_number,
+    const { aadhaar, name, dob, phone, address, skills, employmentHistory } = req.body;
+
+    const newWorker = new Worker({
+      aadhaar,
       name,
       dob,
-      gender,
-      phone_number,
+      phone,
       address,
-      state_of_origin,
-      skillset,
-      employment_status,
-      otp,
-    } = req.body;
-
-    const existing = await User.findOne({ aadhaar_number });
-    if (existing) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
-    const hashedOtp = await bcrypt.hash(otp, 10);
-
-    const newUser = new User({
-      aadhaar_number,
-      name,
-      dob,
-      gender,
-      phone_number,
-      address,
-      state_of_origin,
-      skillset,
-      employment_status,
-      otp: hashedOtp, // ✅ Store hashed OTP
+      skills,
+      employmentHistory,
     });
 
-    await newUser.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Registration failed' });
+    await newWorker.save();
+    return res.status(201).json({ message: "Worker registered successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error registering worker", error });
   }
 };
 
+exports.registerEmployer = async (req , res) => {
+  try {
+    const { companyName, contactPerson, aadhaarGst, email, phone } = req.body;
+
+    const newEmployer = new Employer({
+      companyName,
+      contactPerson,
+      aadhaarGst,
+      email,
+      phone,
+    });
+
+    await newEmployer.save();
+    return res.status(201).json({ message: "Employer registered successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error registering employer", error });
+  }
+};
+
+
 // LOGIN with Aadhaar + OTP
 exports.login = async (req, res) => {
+  const { aadhaar_number, otp } = req.body;
   try {
-    const { aadhaar_number, otp } = req.body;
-    console.log("aadhaar_number, otp",aadhaar_number, otp);
+    console.log("Request body:",req.body);
 
-    const user = await User.findOne({ aadhaar_number });
+    const user = await User.findOne({ aadhaar_number : aadhaar_number });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const isMatch = await bcrypt.compare(otp, user.otp);
-    if (!isMatch) {
+    // const isMatch = await bcrypt.compare(otp, user.otp);
+    if (user.otp !== otp) {
       return res.status(401).json({ error: 'Invalid Aadhaar or OTP' });
     }
 
@@ -76,3 +75,4 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Login failed' });
   }
 };
+

@@ -102,20 +102,46 @@ export default function RegisterPage() {
     })
   }
 
-  // Handle worker registration
-  const handleWorkerRegister = () => {
-    // In a real app, you would validate and submit the form data
-    console.log("Worker registration:", workerForm)
-    router.push("/dashboard")
-  }
-
-  // Handle employer registration
-  const handleEmployerRegister = () => {
-    // In a real app, you would validate and submit the form data
-    console.log("Employer registration:", employerForm)
-    router.push("/employer/dashboard")
-  }
-
+  const handleWorkerRegister = async () => {
+    try {
+      const response = await fetch('/api/register-worker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workerForm),
+      });
+      if (response.ok) {
+        console.log("Worker registration successful.");
+        router.push("/dashboard");
+      } else {
+        console.log("Error in registration");
+      }
+    } catch (error) {
+      console.error("Error in worker registration:", error);
+    }
+  };
+  
+  const handleEmployerRegister = async () => {
+    try {
+      const response = await fetch('/api/register-employer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employerForm),
+      });
+      if (response.ok) {
+        console.log("Employer registration successful.");
+        router.push("/employer/dashboard");
+      } else {
+        console.log("Error in registration");
+      }
+    } catch (error) {
+      console.error("Error in employer registration:", error);
+    }
+  };
+  
   // Handle skill selection
   const handleSkillSelect = (skill: string) => {
     if (workerForm.skills.includes(skill)) {
