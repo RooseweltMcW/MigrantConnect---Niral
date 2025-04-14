@@ -104,7 +104,7 @@ export default function RegisterPage() {
 
   const handleWorkerRegister = async () => {
     try {
-      const response = await fetch('/api/register-worker', {
+      const response = await fetch('/api/worker/register-worker', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export default function RegisterPage() {
   
   const handleEmployerRegister = async () => {
     try {
-      const response = await fetch('/api/register-employer', {
+      const response = await fetch('/api/employer/register-employer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
